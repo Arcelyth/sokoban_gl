@@ -10,8 +10,9 @@ class Shader
 public:
     GLuint ID;
 
-    Shader();
-    ~Shader();
+    Shader() {};
+    // Use program
+    Shader &Use();
     GLuint Compile(const GLchar* source, GLenum type);
     void Run(const GLchar* vertex_source, const GLchar* fragment_source, const GLchar* geometry_source);
     

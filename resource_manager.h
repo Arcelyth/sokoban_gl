@@ -11,6 +11,7 @@
 class ResourceManager 
 {
 public: 
+    ResourceManager() = delete;
     static std::map<std::string, Shader> Shaders;
 
     static Shader LoadShader(const GLchar* v_shader_file, const GLchar* f_shader_file, const GLchar* g_shader_file, std::string name); 

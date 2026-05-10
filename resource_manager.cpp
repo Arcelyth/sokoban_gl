@@ -5,13 +5,15 @@
 #include <sstream>
 #include <iostream>
 
+std::map<std::string, Shader>       ResourceManager::Shaders;
+
 Shader ResourceManager::LoadShader(const GLchar* v_shader_file, const GLchar* f_shader_file, const GLchar* g_shader_file, std::string name)
 {
     Shaders[name] = loadShaderFromFile(v_shader_file, f_shader_file, g_shader_file);
     return Shaders[name];
 }
 
-Shader loadShaderFromFile(const GLchar* v_shader_file, const GLchar* f_shader_file, const GLchar* g_shader_file)
+Shader ResourceManager::loadShaderFromFile(const GLchar* v_shader_file, const GLchar* f_shader_file, const GLchar* g_shader_file)
 {
     std::string v_content, f_content, g_content;
     try 
@@ -39,12 +41,15 @@ Shader loadShaderFromFile(const GLchar* v_shader_file, const GLchar* f_shader_fi
         std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
     }
 
+    const GLchar *g_code = nullptr;
     const GLchar *v_code = v_content.c_str();
     const GLchar *f_code = f_content.c_str();
-    const GLchar *g_code = g_content.c_str();
+    if (g_shader_file != nullptr) {
+        const GLchar *g_code = g_content.c_str();
+    }
 
     Shader shader;
-    shader.Run(v_code, f_code, g_code != nullptr ? g_code: nullptr);
+    shader.Run(v_code, f_code, g_code);
     return shader;
 }
 

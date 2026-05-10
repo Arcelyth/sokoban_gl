@@ -2,6 +2,12 @@
 
 #include "shader.h"
 
+Shader &Shader::Use()
+{
+    glUseProgram(ID);
+    return *this;
+}
+
 GLuint Shader::Compile(const GLchar* source, GLenum type) 
 {
     GLuint shader = glCreateShader(type);
@@ -38,7 +44,7 @@ void Shader::Run(const GLchar* vertex_source, const GLchar* fragment_source, con
 void Shader::checkCompileError(GLuint shader, std::string type) 
 {
     GLint success;
-    if (type == "PROGRAM") 
+    if (type != "PROGRAM") 
     {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (success == GL_FALSE) 

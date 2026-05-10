@@ -1,7 +1,10 @@
-all: sokobang
+SRC := ${wildcard *.cpp}
+OUT := sokobang
 
-sokobang: main.cpp
-	clang++ $< \
+all: ${OUT}
+
+${OUT}: 
+	clang++ ${SRC} \
 	-I../../glew-2.3.1/include \
 	-I../../glfw-3.4/include \
 	-I../../soil/inc/SOIL \
@@ -13,4 +16,5 @@ sokobang: main.cpp
 	-framework Cocoa \
 	-framework IOKit \
 	-framework CoreVideo \
-	-o sokobang
+	-o ${OUT}
+	
