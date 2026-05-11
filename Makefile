@@ -7,11 +7,10 @@ ${OUT}:
 	clang++ ${SRC} \
 	-I../../glew-2.3.1/include \
 	-I../../glfw-3.4/include \
-	-I../../soil/inc/SOIL \
+	-I./vendor/stb \
 	-I../../glm \
 	../../glew-2.3.1/lib/libGLEW.a \
 	../../glfw-3.4/build/src/libglfw3.a \
-	../../soil/build/libsoil.a \
 	-framework OpenGL \
 	-framework Cocoa \
 	-framework IOKit \

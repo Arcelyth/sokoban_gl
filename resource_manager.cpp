@@ -1,4 +1,5 @@
 #include "resource_manager.h"
+#include "stb_image.h"
 
 #include <exception>
 #include <fstream>
@@ -6,11 +7,35 @@
 #include <iostream>
 
 std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManager::Textures;
 
 Shader ResourceManager::LoadShader(const GLchar* v_shader_file, const GLchar* f_shader_file, const GLchar* g_shader_file, std::string name)
 {
     Shaders[name] = loadShaderFromFile(v_shader_file, f_shader_file, g_shader_file);
     return Shaders[name];
+}
+
+Shader ResourceManager::GetShader(std::string name) 
+{
+    return Shaders[name];
+}
+
+Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
+{
+    Textures[name] = loadTextureFromFile(file, alpha);
+    return Textures[name];
+}
+
+Texture2D ResourceManager::GetTexture(std::string name)
+{
+    return Textures[name];
+}
+
+void ResourceManager::Clear()
+{
+    // delete all shaders	
+    for (auto iter : Shaders)
+        glDeleteProgram(iter.second.ID);
 }
 
 Shader ResourceManager::loadShaderFromFile(const GLchar* v_shader_file, const GLchar* f_shader_file, const GLchar* g_shader_file)
@@ -52,14 +77,32 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* v_shader_file, const GL
     return shader;
 }
 
-Shader ResourceManager::GetShader(std::string name) 
+Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
 {
-    return Shaders[name];
+    Texture2D texture;
+    if (alpha)
+    {
+        texture.Internal_Format = GL_RGBA;
+        texture.Image_Format = GL_RGBA;
+    }
+
+    // Load image
+    int width, height;
+    stbi_set_flip_vertically_on_load(true);
+
+    unsigned char* data = stbi_load(file, &width, &height, 0, 3);
+
+    if (data) 
+    {
+        texture.Generate(width, height, data);
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << file << std::endl;
+    }
+
+    return texture;
 }
 
-void ResourceManager::Clear()
-{
-    // delete all shaders	
-    for (auto iter : Shaders)
-        glDeleteProgram(iter.second.ID);
-}
+

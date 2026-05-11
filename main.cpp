@@ -1,6 +1,8 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include <iostream>
 
@@ -13,6 +15,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 int main()
 {
     glfwInit();
+    
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -49,40 +52,46 @@ int main()
 
     // vertices
     GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f, 
-         0.5f, -0.5f, 0.0f, 
-         0.0f,  0.0f, 0.0f, 
-        0.5f, 0.5f, 0.0f, 
-        -0.5, 0.5f, 0.0f,
+        // pos              // texture 
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+         0.0f,  0.0f, 0.0f, 0.5f, 0.5f,  
+        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+        -0.5, 0.5f, 0.0f, 0.0f, 1.0f,
     };
 
     GLuint indices[] = {
-        0, 1, 2,
-        2, 3, 4
+        0, 1, 3,
+        0, 3, 4
     };
-
-    // Buffer objects
-    VertexBuffer vb(sizeof(vertices), vertices);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
 
     // Vertex Array Object
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    // Buffer objects
+    VertexBuffer vb(sizeof(vertices), vertices);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
 
     // Element Buffer Object
     IndexBuffer ib(indices, 6);
     
-    // unbind VAO
+    // Unbind VAO
     glBindVertexArray(0);
     vb.Unbind();
     ib.Unbind();
+
+    // Textures
+    const char *try_tex = "./res/textures/Polygon1.png";
+    Texture2D texture = ResourceManager::LoadTexture(try_tex, true, "try");
+    shader.Use();
+    shader.SetInteger("polygon", 0);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -97,6 +106,7 @@ int main()
         GLfloat time_value = glfwGetTime();
         GLfloat green_value = (sin(time_value) / 2) + 0.5;
         // Set uniform
+        texture.Bind(0);
         shader.SetVector4f("u_Color", 0.5f, green_value, 0.8f, 1.0f);
 
         glBindVertexArray(VAO);
@@ -115,4 +125,5 @@ int main()
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(window, GL_TRUE);
-}  
+} 
+
