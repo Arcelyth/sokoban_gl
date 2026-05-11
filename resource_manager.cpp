@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 
-std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Shader> ResourceManager::Shaders;
 
 Shader ResourceManager::LoadShader(const GLchar* v_shader_file, const GLchar* f_shader_file, const GLchar* g_shader_file, std::string name)
 {
@@ -44,9 +44,8 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* v_shader_file, const GL
     const GLchar *g_code = nullptr;
     const GLchar *v_code = v_content.c_str();
     const GLchar *f_code = f_content.c_str();
-    if (g_shader_file != nullptr) {
+    if (g_shader_file != nullptr) 
         const GLchar *g_code = g_content.c_str();
-    }
 
     Shader shader;
     shader.Run(v_code, f_code, g_code);

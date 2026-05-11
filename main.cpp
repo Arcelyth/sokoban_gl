@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "resource_manager.h"
+#include "vertex_buffer.h"
+#include "index_buffer.h"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
@@ -60,25 +62,28 @@ int main()
     };
 
     // Buffer objects
-    GLuint VBO, VAO;
+    VertexBuffer vb(sizeof(vertices), vertices);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    // Vertex Array Object
+    GLuint VAO;
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
     // Element Buffer Object
-    GLuint EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+    IndexBuffer ib(indices, 6);
     
-    // unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // unbind VAO
     glBindVertexArray(0);
- 
+    vb.Unbind();
+    ib.Unbind();
+
     while(!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -95,7 +100,7 @@ int main()
         shader.SetVector4f("u_Color", 0.5f, green_value, 0.8f, 1.0f);
 
         glBindVertexArray(VAO);
-        // Draw triangle
+        // Draw triangle        
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
 
