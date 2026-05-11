@@ -58,6 +58,7 @@ int main()
         0, 1, 2,
         2, 3, 4
     };
+
     // Buffer objects
     GLuint VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -78,7 +79,6 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
  
-
     while(!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -88,6 +88,12 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Use();
+
+        GLfloat time_value = glfwGetTime();
+        GLfloat green_value = (sin(time_value) / 2) + 0.5;
+        // Set uniform
+        shader.SetVector4f("u_Color", 0.5f, green_value, 0.8f, 1.0f);
+
         glBindVertexArray(VAO);
         // Draw triangle
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
