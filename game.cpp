@@ -19,8 +19,18 @@ void Game::Init()
     glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(Width), static_cast<GLfloat>(Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("u_Sprite", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("u_Projection", projection);
-    ResourceManager::LoadTexture("./res/textures/Polygon1.png", "polygon");
-    SpriteRenderer = new Sprite(ResourceManager::GetShader("sprite"));
+    SpriteRenderer = new class SpriteRenderer(ResourceManager::GetShader("sprite"));
+
+    // Load game textures
+    ResourceManager::LoadTexture("./res/textures/background.png", "Background");
+    ResourceManager::LoadTexture("./res/textures/Wall.png", "Wall");
+    ResourceManager::LoadTexture("./res/textures/Tile.png", "Tile");
+    ResourceManager::LoadTexture("./res/textures/Target.png", "Target");
+    // Load levels
+    GameLevel one;
+    one.Load("./levels/level1.txt", Width, Height);
+    Levels.push_back(one);
+    CurLevel = 0;
 }
 
 void Game::Update(GLfloat dt)
@@ -36,5 +46,9 @@ void Game::ProcessInput(GLfloat dt)
 
 void Game::Render()
 {
-    SpriteRenderer->DrawSprite(ResourceManager::GetTexture("polygon"), glm::vec2(200, 200), glm::vec2(300, 400), glm::radians(45.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    if (State == GAME_PLAY) 
+    {
+        SpriteRenderer->DrawSprite(ResourceManager::GetTexture("Background"), glm::vec2(0, 0), glm::vec2(Width,Height), glm::radians(0.0f));
+        Levels[CurLevel].Draw(*SpriteRenderer);
+    }
 }

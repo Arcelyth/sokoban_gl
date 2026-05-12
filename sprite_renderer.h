@@ -11,11 +11,11 @@
 #include "vertex_buffer.h"
 
 
-class Sprite
+class SpriteRenderer
 {
 public:
-    Sprite(Shader &shader);
-    ~Sprite();
+    SpriteRenderer(Shader &shader);
+    ~SpriteRenderer();
     void DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec2 size = glm::vec2(10, 10), GLfloat rotate = 0.0f, glm::vec4 color = glm::vec4(1.0f));
 
 private:

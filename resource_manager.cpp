@@ -83,7 +83,6 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar *file)
 
     // Load image
     int width, height;
-    stbi_set_flip_vertically_on_load(true);
 
     unsigned char* data = stbi_load(file, &width, &height, 0, 4);
 

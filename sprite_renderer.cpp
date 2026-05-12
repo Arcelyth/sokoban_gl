@@ -1,6 +1,6 @@
-#include "sprite.h"
+#include "sprite_renderer.h"
 
-Sprite::Sprite(Shader &shader) : shader(shader)
+SpriteRenderer::SpriteRenderer(Shader &shader) : shader(shader)
 {
     GLfloat vertices[] = {
         // Pos            // Tex
@@ -27,13 +27,13 @@ Sprite::Sprite(Shader &shader) : shader(shader)
     glBindVertexArray(0);
 }
 
-Sprite::~Sprite()
+SpriteRenderer::~SpriteRenderer()
 {
     glDeleteVertexArrays(1, &quadVAO);
     glDeleteBuffers(1, &vbo);
 }
 
-void Sprite::DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec2 size, GLfloat rotate, glm::vec4 color)
+void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec2 size, GLfloat rotate, glm::vec4 color)
 {
     shader.Use();
     glm::mat4 model = glm::mat4(1.0f);

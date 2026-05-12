@@ -3,7 +3,8 @@
 
 #include <GL/glew.h>
 
-#include "sprite.h"
+#include "game_level.h"
+#include "sprite_renderer.h"
 
 enum GameState 
 {
@@ -18,6 +19,9 @@ public:
     GameState  State;   
     GLboolean  Keys[1024];
     GLuint     Width, Height;
+    std::vector<GameLevel> Levels;
+    GLuint CurLevel;
+
     Game(GLuint width, GLuint height);
     ~Game();
     void Init();
@@ -26,7 +30,7 @@ public:
     void Render();
 
 private:
-    Sprite *SpriteRenderer;
+    SpriteRenderer *SpriteRenderer;
 };
 
 #endif

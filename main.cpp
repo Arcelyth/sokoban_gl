@@ -55,8 +55,6 @@ int main()
     GLfloat delta_time = 0.0f;
     GLfloat last_frame = 0.0f;
 
-    SokoBang.State = GAME_MENU;
-
     while(!glfwWindowShouldClose(window))
     {
         GLfloat current_frame = glfwGetTime();
