@@ -1,3 +1,4 @@
+#include "glm/detail/type_mat.hpp"
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -9,6 +10,7 @@
 #include "resource_manager.h"
 #include "vertex_buffer.h"
 #include "index_buffer.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
@@ -41,6 +43,12 @@ int main()
         return -1;
     }
 
+    glm::mat4 proj = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200, 200, 0));
+
+    glm::mat4 mvp = proj * model * view;
+
     // The viewport dimensions
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -51,13 +59,21 @@ int main()
     Shader shader = ResourceManager::LoadShader(v_shader_file, f_shader_file, nullptr, "Shader");
 
     // vertices
+//    GLfloat vertices[] = {
+//        // pos              // texture 
+//        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
+//         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
+//         0.0f,  0.0f, 0.0f, 0.5f, 0.5f,  
+//        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+//        -0.5, 0.5f, 0.0f, 0.0f, 1.0f,
+//    };
     GLfloat vertices[] = {
-        // pos              // texture 
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 
-         0.0f,  0.0f, 0.0f, 0.5f, 0.5f,  
-        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-        -0.5, 0.5f, 0.0f, 0.0f, 1.0f,
+        // pos                              // texture
+        300.0f, 200.0f, 0.0f,   0.0f, 0.0f,
+        500.0f, 200.0f, 0.0f,   1.0f, 0.0f,
+        400.0f, 300.0f, 0.0f,   0.5f, 0.5f,
+        500.0f, 400.0f, 0.0f,   1.0f, 1.0f,
+        300.0f, 400.0f, 0.0f,   0.0f, 1.0f,
     };
 
     GLuint indices[] = {
@@ -88,10 +104,14 @@ int main()
     ib.Unbind();
 
     // Textures
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     const char *try_tex = "./res/textures/Polygon1.png";
-    Texture2D texture = ResourceManager::LoadTexture(try_tex, true, "try");
+    Texture2D texture = ResourceManager::LoadTexture(try_tex, "try");
     shader.Use();
     shader.SetInteger("polygon", 0);
+    shader.SetMatrix4("u_MVP", mvp);
 
     while(!glfwWindowShouldClose(window))
     {

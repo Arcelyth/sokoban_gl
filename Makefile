@@ -17,3 +17,4 @@ ${OUT}:
 	-framework CoreVideo \
 	-o ${OUT}
 	
+	./${OUT}

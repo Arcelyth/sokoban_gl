@@ -20,9 +20,9 @@ Shader ResourceManager::GetShader(std::string name)
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
+Texture2D ResourceManager::LoadTexture(const GLchar *file, std::string name)
 {
-    Textures[name] = loadTextureFromFile(file, alpha);
+    Textures[name] = loadTextureFromFile(file);
     return Textures[name];
 }
 
@@ -77,20 +77,15 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* v_shader_file, const GL
     return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
+Texture2D ResourceManager::loadTextureFromFile(const GLchar *file)
 {
     Texture2D texture;
-    if (alpha)
-    {
-        texture.Internal_Format = GL_RGBA;
-        texture.Image_Format = GL_RGBA;
-    }
 
     // Load image
     int width, height;
     stbi_set_flip_vertically_on_load(true);
 
-    unsigned char* data = stbi_load(file, &width, &height, 0, 3);
+    unsigned char* data = stbi_load(file, &width, &height, 0, 4);
 
     if (data) 
     {
