@@ -27,6 +27,7 @@ public:
     ~Game();
     void Init();
     void ProcessInput();
+    void MovePlayer(int dx, int dy);
     void Update(GLfloat dt);
     void Render();
 

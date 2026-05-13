@@ -46,6 +46,53 @@ void Game::Update(GLfloat dt)
 
 }
 
+void Game::MovePlayer(int dx, int dy)
+{
+    GameLevel &level = Levels[CurLevel];
+    GameObject *player = level.Player;
+
+    int nx = player->GPosition.x + dx;
+    int ny = player->GPosition.y + dy;
+
+    if (nx < 0 || nx >= level.Map.x)
+        return;
+
+    if (ny < 0 || ny >= level.Map.y)
+        return;
+
+    if (level.IsWall(nx, ny))
+        return;
+
+    GameObject *box = level.GetBox(nx, ny);
+
+    if (box)
+    {
+        int bx = nx + dx;
+        int by = ny + dy;
+
+        if (bx < 0 || bx >= level.Map.x)
+            return;
+
+        if (by < 0 || by >= level.Map.y)
+            return;
+
+        if (level.IsWall(bx, by))
+            return;
+        if (level.GetBox(bx, by))
+            return;
+
+        box->GPosition.x = bx;
+        box->GPosition.y = by;
+        box->Position.x += dx * level.GridSize.x;
+        box->Position.y += dy * level.GridSize.y;
+    }
+
+    player->GPosition.x = nx;
+    player->GPosition.y = ny;
+
+    player->Position.x += dx * level.GridSize.x;
+    player->Position.y += dy * level.GridSize.y;
+}
 
 void Game::ProcessInput()
 {
@@ -55,45 +102,44 @@ void Game::ProcessInput()
         GameObject *player = level.Player;
         if (Keys[GLFW_KEY_A] && !KeysProcessed[GLFW_KEY_A])
         {
-
-            if (player->GPosition.x > 0)
-            {
-                player->Position.x -= level.GridSize.x;
-                player->GPosition.x--; 
-            }
+            MovePlayer(-1, 0);
             KeysProcessed[GLFW_KEY_A] = GL_TRUE;
+        }
+        if (Keys[GLFW_KEY_LEFT] && !KeysProcessed[GLFW_KEY_LEFT])
+        {
+            MovePlayer(-1, 0);
+            KeysProcessed[GLFW_KEY_LEFT] = GL_TRUE;
         }
         if (Keys[GLFW_KEY_D] && !KeysProcessed[GLFW_KEY_D])
         {
-
-            if (player->GPosition.x < level.Map.x - 1)
-            {
-                player->Position.x += level.GridSize.x;
-                player->GPosition.x++; 
-            }
+            MovePlayer(1, 0);
             KeysProcessed[GLFW_KEY_D] = GL_TRUE;
+        }
+        if (Keys[GLFW_KEY_RIGHT] && !KeysProcessed[GLFW_KEY_RIGHT])
+        {
+            MovePlayer(1, 0);
+            KeysProcessed[GLFW_KEY_RIGHT] = GL_TRUE;
         }
         if (Keys[GLFW_KEY_W] && !KeysProcessed[GLFW_KEY_W])
         {
-
-            if (player->GPosition.y > 0)
-            {
-                player->Position.y -= level.GridSize.y;
-                player->GPosition.y--; 
-            }
+            MovePlayer(0, -1);
             KeysProcessed[GLFW_KEY_W] = GL_TRUE;
+        }
+        if (Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP])
+        {
+            MovePlayer(0, -1);
+            KeysProcessed[GLFW_KEY_UP] = GL_TRUE;
         }
         if (Keys[GLFW_KEY_S] && !KeysProcessed[GLFW_KEY_S])
         {
-
-            if (player->GPosition.y < level.Map.y - 1)
-            {
-                player->Position.y += level.GridSize.y;
-                player->GPosition.y++; 
-            }
+            MovePlayer(0, 1);
             KeysProcessed[GLFW_KEY_S] = GL_TRUE;
         }
-
+        if (Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN])
+        {
+            MovePlayer(0, 1);
+            KeysProcessed[GLFW_KEY_DOWN] = GL_TRUE;
+        }
     }
 }
 
