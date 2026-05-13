@@ -16,16 +16,17 @@ enum GameState
 class Game
 {
 public:
-    GameState  State;   
-    GLboolean  Keys[1024];
-    GLuint     Width, Height;
+    GameState State;   
+    GLboolean Keys[1024];
+    GLboolean KeysProcessed[1024];
+    GLuint Width, Height;
     std::vector<GameLevel> Levels;
     GLuint CurLevel;
 
     Game(GLuint width, GLuint height);
     ~Game();
     void Init();
-    void ProcessInput(GLfloat dt);
+    void ProcessInput();
     void Update(GLfloat dt);
     void Render();
 

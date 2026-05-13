@@ -13,13 +13,15 @@ class GameLevel
 {
 public:
     std::vector<GameObject> Items;
-    GameLevel() { }
-    void Load(const GLchar *file, GLuint levelWidth, GLuint levelHeight);
+    glm::vec2 PlayerPos, PlayerSize, PlayerGPos, GridSize, LevelSize, Offset, Map;
+    GameObject *Player;
+    GameLevel(glm::vec2 playerSize = glm::vec2(60, 60));
+    void Load(const GLchar *file, GLuint levelWidth, GLuint levelHeight, GLuint offsetX, GLuint offsetY);
     void Draw(SpriteRenderer &renderer);
     GLboolean IsPass();
 
 private:
-    void init(std::vector<std::vector<char>> tileData, GLuint levelWidth, GLuint levelHeight);
+    void init(std::vector<std::vector<char>> tileData);
 };
 
 #endif

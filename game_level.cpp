@@ -1,9 +1,12 @@
 #include "game_level.h"
+#include "game_object.h"
 
 #include <fstream>
 #include <sstream>
 
-void GameLevel::Load(const GLchar *file, GLuint levelWidth, GLuint levelHeight)
+GameLevel::GameLevel(glm::vec2 playerSize) : PlayerSize(playerSize), PlayerPos(glm::vec2(0, 0)), PlayerGPos(glm::vec2(0, 0)) {}
+
+void GameLevel::Load(const GLchar *file, GLuint levelWidth, GLuint levelHeight, GLuint offsetX, GLuint offsetY)
 {
     Items.clear();
     char itemCode;
@@ -11,6 +14,8 @@ void GameLevel::Load(const GLchar *file, GLuint levelWidth, GLuint levelHeight)
     std::string line;
     std::ifstream fstream(file);
     std::vector<std::vector<char>> itemData;
+    LevelSize = glm::vec2(levelWidth, levelHeight);
+    Offset = glm::vec2(offsetX, offsetY);
     if (fstream)
     {
         while (std::getline(fstream, line)) 
@@ -22,14 +27,16 @@ void GameLevel::Load(const GLchar *file, GLuint levelWidth, GLuint levelHeight)
             itemData.push_back(row);
         }
         if (itemData.size() > 0)
-            init(itemData, levelWidth, levelHeight);
+            init(itemData);
     }
+    Map = glm::vec2(itemData[0].size(), itemData.size());
 }
 
 void GameLevel::Draw(SpriteRenderer &renderer)
 {
-    for (GameObject &tile : Items)
-        tile.Draw(renderer);
+    for (GameObject &items: Items)
+        items.Draw(renderer);
+    Player->Draw(renderer);
 }
 
 GLboolean GameLevel::IsPass()
@@ -37,32 +44,39 @@ GLboolean GameLevel::IsPass()
     return GL_FALSE;
 }
 
-void GameLevel::init(std::vector<std::vector<char>> itemData, GLuint levelWidth, GLuint levelHeight)
+void GameLevel::init(std::vector<std::vector<char>> itemData)
 {
     GLuint height = itemData.size();
     GLuint width = itemData[0].size();
-    GLfloat unit_width = levelWidth / static_cast<GLfloat>(width);
-    GLfloat unit_height = levelHeight / static_cast<GLfloat>(height); 
-
+    GLuint GridWidth = LevelSize.x / static_cast<GLfloat>(width);
+    GLuint GridHeight = LevelSize.y / static_cast<GLfloat>(height);
+    GridSize = glm::vec2(GridWidth, GridHeight);    
     // Initialize level items based on itemData		
     for (GLuint y = 0; y < height; ++y)
     {
         for (GLuint x = 0; x < width; ++x)
         {
-            glm::vec2 pos(unit_width * x, unit_height * y);
-            glm::vec2 size(unit_width, unit_height);
+            glm::vec2 pos(Offset.x + GridWidth * x, Offset.y + GridHeight * y);
+            glm::vec2 size(GridWidth, GridHeight);
             
-            Texture2D &texture = ResourceManager::GetTexture("Tile");
+            Texture2D texture;
   
             if (itemData[y][x] == 'W')
                 texture = ResourceManager::GetTexture("Wall");
-            else if (itemData[y][x] == 'T')
+            else if (itemData[y][x] == 'E')
                 texture = ResourceManager::GetTexture("Target");
+            else if (itemData[y][x] == 'S') 
+            {
+                PlayerPos = pos + glm::vec2((GridWidth - static_cast<GLfloat>(PlayerSize.x))/ 2, (GridHeight - static_cast<GLfloat>(PlayerSize.y)) /2);
+                texture = ResourceManager::GetTexture("Tile");
+                Player = new GameObject(PlayerPos, glm::vec2(x, y), PlayerSize, ResourceManager::GetTexture("Player"));
+            }                
             else
                 texture = ResourceManager::GetTexture("Tile");
 
-            GameObject obj(pos, size, texture, glm::vec4(0.8f, 0.8f, 0.7f, 1.0));
+            GameObject obj(pos, glm::vec2(x, y), size,  texture, glm::vec4(0.8f, 0.8f, 0.7f, 1.0));
             Items.push_back(obj);
         }
     }
+
 }
