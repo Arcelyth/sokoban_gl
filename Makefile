@@ -1,4 +1,4 @@
-SRC := ${wildcard *.cpp}
+SRC := ${wildcard src/*.cpp}
 OUT := sokobang
 
 all: ${OUT}
