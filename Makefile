@@ -1,5 +1,5 @@
 SRC := ${wildcard src/*.cpp}
-OUT := sokobang
+OUT := sokoban
 
 all: ${OUT}
 

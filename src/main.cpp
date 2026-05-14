@@ -13,7 +13,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 const GLuint SCREEN_WIDTH = 800;
 const GLuint SCREEN_HEIGHT = 600;
 
-Game SokoBang(SCREEN_WIDTH, SCREEN_HEIGHT);
+Game Sokoban(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 int main()
 {
@@ -25,7 +25,7 @@ int main()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    const char *title = "SokoBang";
+    const char *title = "Sokoban";
     GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, title, nullptr, nullptr);
     if (window == nullptr)
     {
@@ -50,7 +50,7 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Initialize game
-    SokoBang.Init();
+    Sokoban.Init();
 
     GLfloat delta_time = 0.0f;
     GLfloat last_frame = 0.0f;
@@ -61,14 +61,14 @@ int main()
         delta_time = current_frame - last_frame;
         glfwPollEvents();
 
-        SokoBang.ProcessInput();
-        SokoBang.Update(delta_time);
+        Sokoban.ProcessInput();
+        Sokoban.Update(delta_time);
 
         // Render
         glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        SokoBang.Render();
+        Sokoban.Render();
             
         // Show to the screen
         glfwSwapBuffers(window);
@@ -84,12 +84,12 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS){
-            SokoBang.Keys[key] = GL_TRUE;
+            Sokoban.Keys[key] = GL_TRUE;
         }
         else if (action == GLFW_RELEASE) 
         {
-            SokoBang.Keys[key] = GL_FALSE;
-            SokoBang.KeysProcessed[key] = GL_FALSE;           
+            Sokoban.Keys[key] = GL_FALSE;
+            Sokoban.KeysProcessed[key] = GL_FALSE;           
         }
 
     }
