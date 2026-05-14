@@ -54,17 +54,19 @@ void TextRenderer::Load(std::string font, GLuint fontSize)
         GLuint texture;
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RED,
-            face->glyph->bitmap.width,
-            face->glyph->bitmap.rows,
-            0,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            face->glyph->bitmap.buffer
-            );
+
+        if (face->glyph->bitmap.width == 0 || face->glyph->bitmap.rows == 0) 
+        {
+            unsigned char pixel = 0;
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1, 1, 0, GL_RED, GL_UNSIGNED_BYTE, &pixel);
+        } else 
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 
+                face->glyph->bitmap.width, 
+                face->glyph->bitmap.rows, 
+                0, GL_RED, GL_UNSIGNED_BYTE, 
+                face->glyph->bitmap.buffer);
+        }
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -86,10 +88,10 @@ void TextRenderer::Load(std::string font, GLuint fontSize)
     FT_Done_FreeType(ft);
 }
 
-void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec4 color)
 {
     TextShader.Use();
-    TextShader.SetVector3f("u_TextColor", color);
+    TextShader.SetVector4f("u_TextColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
 

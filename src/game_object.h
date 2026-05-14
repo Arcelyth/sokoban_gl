@@ -11,6 +11,7 @@ enum ObjType
     PLAYER,
     BOX,
     WALL,
+    TARGET,
 };
 
 class GameObject

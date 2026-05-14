@@ -34,14 +34,16 @@ void Game::Init()
     TextRenderer = new class TextRenderer(this->Width, this->Height);
     TextRenderer->Load("./res/fonts/AnonymousPro-Regular.ttf", 24);
     // Load levels
-    GameLevel one;
+    GameLevel one, two;
 
     GLuint LWidth = Width * 0.6;
     GLuint LHeight = Height * 0.6;
     GLuint offsetX = (Width - LWidth) / 2;
     GLuint offsetY = (Height - LHeight) / 2;
     one.Load("./levels/level1.txt", LWidth, LHeight, offsetX, offsetY);
+    two.Load("./levels/level2.txt", LWidth, LHeight, offsetX, offsetY);
     Levels.push_back(one);
+    Levels.push_back(two);
     CurLevel = 0;
 }
 
@@ -49,7 +51,11 @@ void Game::Update(GLfloat dt)
 {
     if (State == GAME_PLAY && Levels[CurLevel].IsPass())
     {
-        this->State = GAME_OVER;
+        CurLevel++;
+        if (CurLevel >= Levels.size()) 
+        {
+            State = GAME_OVER;
+        }
     }
 }
 
@@ -145,7 +151,7 @@ void Game::ProcessInput()
             KeysProcessed[GLFW_KEY_S] = GL_TRUE;
         }
         if (Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN])
-        {
+        { 
             MovePlayer(0, 1);
             KeysProcessed[GLFW_KEY_DOWN] = GL_TRUE;
         }
@@ -160,11 +166,16 @@ void Game::ProcessInput()
 
 void Game::Render()
 {
+    SpriteRenderer->DrawSprite(ResourceManager::GetTexture("Background"), glm::vec2(0, 0), glm::vec2(Width,Height), glm::radians(0.0f));
     if (State == GAME_PLAY) 
     {
-        SpriteRenderer->DrawSprite(ResourceManager::GetTexture("Background"), glm::vec2(0, 0), glm::vec2(Width,Height), glm::radians(0.0f));
         Levels[CurLevel].Draw(*SpriteRenderer);
-        TextRenderer->RenderText("Level:" + std::to_string(CurLevel + 1) , 5.0f, 5.0f, 1.0f);
+        TextRenderer->RenderText("LEVEL:" + std::to_string(CurLevel + 1) , 5.0f, 5.0f, 1.0f);
+        TextRenderer->RenderText("Press 'U' to Revoke", Width - 250.0f, 5.0f, 1.0f, glm::vec4(0.3, 0.6, 0.8, 1.0));
+    }
+    else if (State == GAME_OVER)
+    {
+        TextRenderer->RenderText("OMG! You passed all the puzzles!", 200,280  , 1.0f, glm::vec4(0.3,0.9,0.5, 1.0));
     }
 }
 

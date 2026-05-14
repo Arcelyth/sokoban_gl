@@ -42,6 +42,10 @@ void GameLevel::Draw(SpriteRenderer &renderer)
         items.Draw(renderer);
     for (GameObject &box: Boxes)
         box.Draw(renderer);
+    for (GameObject &target: Targets)
+        target.Draw(renderer);
+    for (GameObject &wall: Walls)
+        wall.Draw(renderer);
     Player->Draw(renderer);
 }
 
@@ -97,36 +101,35 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
             glm::vec2 pos(Offset.x + GridWidth * x, Offset.y + GridHeight * y);
             glm::vec2 size(GridWidth, GridHeight);
             
-            Texture2D texture;
-  
             if (itemData[y][x] == 'W')
             {
-                texture = ResourceManager::GetTexture("Wall");
-                GameObject wall(pos, glm::vec2(x, y), size, texture);
+                glm::vec2 p = GridToPos(WALL, glm::vec2(x, y));
+                glm::vec2 s = GridSize * 1.0f;
+                GameObject wall(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Wall"));
                 Walls.push_back(wall);
             }
             else if (itemData[y][x] == 'E')
             {
-                texture = ResourceManager::GetTexture("Target");
-                GameObject target(pos, glm::vec2(x, y), size, texture);
+                glm::vec2 p = GridToPos(TARGET, glm::vec2(x, y));
+                glm::vec2 s = GridSize * 0.6f;
+                GameObject target(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Target"));
                 Targets.push_back(target);
             }
             else if (itemData[y][x] == 'S') 
             {
-                PlayerPos = pos + glm::vec2((GridWidth - static_cast<GLfloat>(PlayerSize.x))/ 2, (GridHeight - static_cast<GLfloat>(PlayerSize.y)) /2);
-                texture = ResourceManager::GetTexture("Tile");
-                Player = new GameObject(PlayerPos, glm::vec2(x, y), PlayerSize, ResourceManager::GetTexture("Player"));
+                glm::vec2 p = GridToPos(PLAYER, glm::vec2(x, y));
+                glm::vec2 s = GridSize * 0.75f;
+                Player = new GameObject(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Player"));
             }                
             else if (itemData[y][x] == '1') 
             {
-                texture = ResourceManager::GetTexture("Box");
-                GameObject box(pos, glm::vec2(x, y), size, texture);
+                glm::vec2 p = GridToPos(BOX, glm::vec2(x, y));
+                glm::vec2 s = GridSize * 0.85f;
+                GameObject box(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Box"));
                 Boxes.push_back(box);
             }
-            else
-                texture = ResourceManager::GetTexture("Tile");
 
-            GameObject obj(pos, glm::vec2(x, y), size,  texture, glm::vec4(0.8f, 0.8f, 0.7f, 1.0));
+            GameObject obj(pos, glm::vec2(x, y), size, ResourceManager::GetTexture("Tile"), glm::vec4(0.8f, 0.8f, 0.7f, 1.0));
             Items.push_back(obj);
         }
     }
@@ -134,13 +137,20 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
 }
 
 glm::vec2 GameLevel::GridToPos(ObjType ty, glm::vec2 pos) {
-    glm::vec2 offset(Offset.x + GridSize.x * pos.x, Offset.y + GridSize.y * pos.y);
+    glm::vec2 worldOrigin(Offset.x + GridSize.x * pos.x, Offset.y + GridSize.y * pos.y);
+    
+    float scale = 1.0f; 
     if (ty == PLAYER) 
-    {
-        return offset + glm::vec2((GridSize.x - static_cast<GLfloat>(PlayerSize.x))/ 2, (GridSize.y - static_cast<GLfloat>(PlayerSize.y)) /2);
-    }
-    else
-    {
-        return offset;
-    }
+        scale = 0.75f;
+    else if (ty == BOX) 
+        scale = 0.85f;
+    else if (ty == TARGET) 
+        scale = 0.60f;
+    else if (ty == WALL)
+        scale = 1.00f;
+
+    glm::vec2 actualSize = GridSize * scale;
+    glm::vec2 centerOffset = (GridSize - actualSize) * 0.5f;
+
+    return worldOrigin + centerOffset;
 }

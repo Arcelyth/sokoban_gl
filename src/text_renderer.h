@@ -23,7 +23,7 @@ public:
     Shader TextShader;
     TextRenderer(GLuint width, GLuint height);
     void Load(std::string font, GLuint fontSize);
-    void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color = glm::vec3(1.0f));
+    void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec4 color = glm::vec4(1.0f));
 
 private:
     GLuint VAO, VBO;
