@@ -2,7 +2,6 @@
 #define GAMEOBJECT_H
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 
 #include "texture.h"
 #include "sprite_renderer.h"

@@ -12,11 +12,12 @@ Game::Game(GLuint width, GLuint height)
 Game::~Game()
 {
     delete SpriteRenderer;
+    delete TextRenderer;
 }
 
 void Game::Init()
 {
-    ResourceManager::LoadShader("./res/shader/shader.vert", "./res/shader/shader.frag", nullptr, "sprite");
+    ResourceManager::LoadShader("./res/shaders/shader.vert", "./res/shaders/shader.frag", nullptr, "sprite");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(Width), static_cast<GLfloat>(Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("u_Sprite", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("u_Projection", projection);
@@ -29,6 +30,9 @@ void Game::Init()
     ResourceManager::LoadTexture("./res/textures/Target.png", "Target");
     ResourceManager::LoadTexture("./res/textures/Player.png", "Player");
     ResourceManager::LoadTexture("./res/textures/Box.png", "Box");
+
+    TextRenderer = new class TextRenderer(this->Width, this->Height);
+    TextRenderer->Load("./res/fonts/AnonymousPro-Regular.ttf", 24);
     // Load levels
     GameLevel one;
 
@@ -160,6 +164,7 @@ void Game::Render()
     {
         SpriteRenderer->DrawSprite(ResourceManager::GetTexture("Background"), glm::vec2(0, 0), glm::vec2(Width,Height), glm::radians(0.0f));
         Levels[CurLevel].Draw(*SpriteRenderer);
+        TextRenderer->RenderText("Level:" + std::to_string(CurLevel + 1) , 5.0f, 5.0f, 1.0f);
     }
 }
 

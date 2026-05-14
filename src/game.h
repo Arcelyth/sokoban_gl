@@ -5,6 +5,7 @@
 
 #include "game_level.h"
 #include "sprite_renderer.h"
+#include "text_renderer.h"
 
 enum GameState 
 {
@@ -34,6 +35,7 @@ public:
 
 private:
     SpriteRenderer *SpriteRenderer;
+    TextRenderer *TextRenderer;
 };
 
 #endif
