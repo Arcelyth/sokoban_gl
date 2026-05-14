@@ -30,6 +30,7 @@ public:
     void MovePlayer(int dx, int dy);
     void Update(GLfloat dt);
     void Render();
+    void Undo();
 
 private:
     SpriteRenderer *SpriteRenderer;

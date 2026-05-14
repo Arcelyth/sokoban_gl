@@ -7,6 +7,13 @@
 #include "texture.h"
 #include "sprite_renderer.h"
 
+enum ObjType 
+{
+    PLAYER,
+    BOX,
+    WALL,
+};
+
 class GameObject
 {
 public: 

@@ -69,12 +69,17 @@ GLboolean GameLevel::IsWall(int nx, int ny)
     return GL_FALSE;
 }
 
-GameObject *GameLevel::GetBox(int nx, int ny) 
+int GameLevel::GetBox(int nx, int ny) 
 {
+    GLuint idx = 0;
     for (GameObject &box: Boxes)
+    {
         if (box.GPosition == glm::vec2(nx, ny))
-            return &box;
-    return nullptr;
+            return idx;
+        idx++;
+    }
+
+    return -1;
 }
 
 void GameLevel::init(std::vector<std::vector<char>> itemData)
@@ -128,4 +133,14 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
 
 }
 
-
+glm::vec2 GameLevel::GridToPos(ObjType ty, glm::vec2 pos) {
+    glm::vec2 offset(Offset.x + GridSize.x * pos.x, Offset.y + GridSize.y * pos.y);
+    if (ty == PLAYER) 
+    {
+        return offset + glm::vec2((GridSize.x - static_cast<GLfloat>(PlayerSize.x))/ 2, (GridSize.y - static_cast<GLfloat>(PlayerSize.y)) /2);
+    }
+    else
+    {
+        return offset;
+    }
+}

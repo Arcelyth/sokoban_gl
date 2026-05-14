@@ -43,11 +43,15 @@ void Game::Init()
 
 void Game::Update(GLfloat dt)
 {
-
+    if (State == GAME_PLAY && Levels[CurLevel].IsPass())
+    {
+        this->State = GAME_OVER;
+    }
 }
 
 void Game::MovePlayer(int dx, int dy)
 {
+    Command cmd;
     GameLevel &level = Levels[CurLevel];
     GameObject *player = level.Player;
 
@@ -56,31 +60,32 @@ void Game::MovePlayer(int dx, int dy)
 
     if (nx < 0 || nx >= level.Map.x)
         return;
-
     if (ny < 0 || ny >= level.Map.y)
         return;
 
     if (level.IsWall(nx, ny))
         return;
 
-    GameObject *box = level.GetBox(nx, ny);
-
-    if (box)
+    cmd.PlayerPrev = player->GPosition;
+    int idx = level.GetBox(nx, ny);
+    if (idx != -1)
     {
+        GameObject *box = &level.Boxes[idx];
         int bx = nx + dx;
         int by = ny + dy;
 
         if (bx < 0 || bx >= level.Map.x)
             return;
-
         if (by < 0 || by >= level.Map.y)
             return;
 
         if (level.IsWall(bx, by))
             return;
-        if (level.GetBox(bx, by))
+        if (level.GetBox(bx, by) != -1)
             return;
 
+        cmd.BoxIdx = idx;
+        cmd.BoxPrev = box->GPosition;
         box->GPosition.x = bx;
         box->GPosition.y = by;
         box->Position.x += dx * level.GridSize.x;
@@ -89,9 +94,9 @@ void Game::MovePlayer(int dx, int dy)
 
     player->GPosition.x = nx;
     player->GPosition.y = ny;
-
     player->Position.x += dx * level.GridSize.x;
     player->Position.y += dy * level.GridSize.y;
+    level.History.push_back(cmd);
 }
 
 void Game::ProcessInput()
@@ -140,6 +145,12 @@ void Game::ProcessInput()
             MovePlayer(0, 1);
             KeysProcessed[GLFW_KEY_DOWN] = GL_TRUE;
         }
+        // Undo
+        if (Keys[GLFW_KEY_U] && !KeysProcessed[GLFW_KEY_U])
+        {
+            Undo();
+            KeysProcessed[GLFW_KEY_U] = GL_TRUE;
+        }
     }
 }
 
@@ -149,5 +160,26 @@ void Game::Render()
     {
         SpriteRenderer->DrawSprite(ResourceManager::GetTexture("Background"), glm::vec2(0, 0), glm::vec2(Width,Height), glm::radians(0.0f));
         Levels[CurLevel].Draw(*SpriteRenderer);
+    }
+}
+
+void Game::Undo()
+{
+    GameLevel &level = Levels[CurLevel];
+    if (level.History.empty())
+        return;
+
+    Command cmd = level.History.back();
+    level.History.pop_back();
+
+    if (cmd.PlayerPrev != glm::ivec2(-1, -1)) {
+        level.Player->GPosition = cmd.PlayerPrev;
+        level.Player->Position = level.GridToPos(PLAYER, cmd.PlayerPrev);
+    }
+
+    if (cmd.BoxPrev != glm::ivec2(-1, -1) && cmd.BoxIdx != -1) {
+        GameObject &box = level.Boxes[cmd.BoxIdx];
+        box.GPosition = cmd.BoxPrev;
+        box.Position = level.GridToPos(BOX, cmd.BoxPrev);
     }
 }
