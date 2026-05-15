@@ -51,15 +51,21 @@ void GameLevel::Draw(SpriteRenderer &renderer)
 
 GLboolean GameLevel::IsPass()
 {
-    for (GameObject &target: Targets)
+    for (GameObject &target : Targets)
     {
-        for (GameObject &boxes: Boxes)
+        bool matched = false;
+
+        for (GameObject &box : Boxes)
         {
-            if (target.GPosition != boxes.GPosition) 
+            if (target.GPosition == box.GPosition)
             {
-                return GL_FALSE;                
+                matched = true;
+                break;
             }
         }
+
+        if (!matched)
+            return GL_FALSE;
     }
 
     return GL_TRUE;
