@@ -30,6 +30,7 @@ void Game::Init()
     ResourceManager::LoadTexture("./res/textures/Target.png", "Target");
     ResourceManager::LoadTexture("./res/textures/Player.png", "Player");
     ResourceManager::LoadTexture("./res/textures/Box.png", "Box");
+    ResourceManager::LoadTexture("./res/textures/Box2.png", "Box2");
 
     TextRenderer = new class TextRenderer(this->Width, this->Height);
     TextRenderer->Load("./res/fonts/AnonymousPro-Regular.ttf", 24);
@@ -81,27 +82,70 @@ void Game::MovePlayer(int dx, int dy)
     if (idx != -1)
     {
         GameObject *box = &level.Boxes[idx];
+
         int bx = nx + dx;
         int by = ny + dy;
 
-        if (bx < 0 || bx >= level.Map.x)
-            return;
-        if (by < 0 || by >= level.Map.y)
-            return;
+        if (box->Ty == BOX2)
+        {
+            int sx = nx;
+            int sy = ny;
 
-        if (level.IsWall(bx, by))
-            return;
-        if (level.GetBox(bx, by) != -1)
-            return;
+            while (true)
+            {
+                int tx = sx + dx;
+                int ty = sy + dy;
 
-        cmd.BoxIdx = idx;
-        cmd.BoxPrev = box->GPosition;
-        box->GPosition.x = bx;
-        box->GPosition.y = by;
-        box->Position.x += dx * level.GridSize.x;
-        box->Position.y += dy * level.GridSize.y;
+                if (tx < 0 || tx >= level.Map.x)
+                    break;
+                if (ty < 0 || ty >= level.Map.y)
+                    break;
+
+                if (level.IsWall(tx, ty))
+                    break;
+
+                int other = level.GetBox(tx, ty);
+                if (other != -1 && other != idx)
+                    break;
+
+                sx = tx;
+                sy = ty;
+            }
+
+            if (sx == nx && sy == ny)
+                return;
+
+            cmd.BoxIdx = idx;
+            cmd.BoxPrev = box->GPosition;
+
+            box->GPosition.x = sx;
+            box->GPosition.y = sy;
+
+            box->Position = level.GridToPos(BOX, glm::vec2(sx, sy));
+        }
+        else
+        {
+            if (bx < 0 || bx >= level.Map.x)
+                return;
+            if (by < 0 || by >= level.Map.y)
+                return;
+
+            if (level.IsWall(bx, by))
+                return;
+
+            if (level.GetBox(bx, by) != -1)
+                return;
+
+            cmd.BoxIdx = idx;
+            cmd.BoxPrev = box->GPosition;
+
+            box->GPosition.x = bx;
+            box->GPosition.y = by;
+
+            box->Position.x += dx * level.GridSize.x;
+            box->Position.y += dy * level.GridSize.y;
+        }
     }
-
     player->GPosition.x = nx;
     player->GPosition.y = ny;
     player->Position.x += dx * level.GridSize.x;

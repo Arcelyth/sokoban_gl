@@ -111,31 +111,38 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
             {
                 glm::vec2 p = GridToPos(WALL, glm::vec2(x, y));
                 glm::vec2 s = GridSize * 1.0f;
-                GameObject wall(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Wall"));
+                GameObject wall(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Wall"), WALL);
                 Walls.push_back(wall);
             }
             else if (itemData[y][x] == 'E')
             {
                 glm::vec2 p = GridToPos(TARGET, glm::vec2(x, y));
                 glm::vec2 s = GridSize * 0.6f;
-                GameObject target(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Target"));
+                GameObject target(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Target"), TARGET);
                 Targets.push_back(target);
             }
             else if (itemData[y][x] == 'S') 
             {
                 glm::vec2 p = GridToPos(PLAYER, glm::vec2(x, y));
                 glm::vec2 s = GridSize * 0.75f;
-                Player = new GameObject(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Player"));
+                Player = new GameObject(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Player"), PLAYER);
             }                
             else if (itemData[y][x] == '1') 
             {
                 glm::vec2 p = GridToPos(BOX, glm::vec2(x, y));
                 glm::vec2 s = GridSize * 0.85f;
-                GameObject box(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Box"));
+                GameObject box(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Box"), BOX);
                 Boxes.push_back(box);
             }
-
-            GameObject obj(pos, glm::vec2(x, y), size, ResourceManager::GetTexture("Tile"), glm::vec4(0.8f, 0.8f, 0.7f, 1.0));
+            else if (itemData[y][x] == '2') 
+            {
+                glm::vec2 p = GridToPos(BOX, glm::vec2(x, y));
+                glm::vec2 s = GridSize * 0.85f;
+                GameObject box(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Box2"), BOX2);
+                Boxes.push_back(box);
+            }
+           
+            GameObject obj(pos, glm::vec2(x, y), size, ResourceManager::GetTexture("Tile"), TILE, glm::vec4(0.8f, 0.8f, 0.7f, 1.0));
             Items.push_back(obj);
         }
     }
