@@ -8,7 +8,6 @@
 
 #include "texture.h"
 #include "shader.h"
-#include "vertex_buffer.h"
 
 
 class SpriteRenderer
