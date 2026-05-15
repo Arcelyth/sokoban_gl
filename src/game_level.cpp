@@ -37,13 +37,11 @@ void GameLevel::Load(const GLchar *file, GLuint levelWidth, GLuint levelHeight, 
 }
 
 void GameLevel::Draw(SpriteRenderer &renderer)
-{
+{    
     for (GameObject &items: Items)
         items.Draw(renderer);
     for (GameObject &box: Boxes)
         box.Draw(renderer);
-    for (GameObject &target: Targets)
-        target.Draw(renderer);
     for (GameObject &wall: Walls)
         wall.Draw(renderer);
     Player->Draw(renderer);
@@ -98,7 +96,7 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
     GLuint width = itemData[0].size();
     GLuint GridWidth = LevelSize.x / static_cast<GLfloat>(width);
     GLuint GridHeight = LevelSize.y / static_cast<GLfloat>(height);
-    GridSize = glm::vec2(GridWidth, GridHeight);    
+    GridSize = glm::vec2(GridWidth, GridHeight);   
     // Initialize level items based on itemData		
     for (GLuint y = 0; y < height; ++y)
     {
@@ -106,7 +104,8 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
         {
             glm::vec2 pos(Offset.x + GridWidth * x, Offset.y + GridHeight * y);
             glm::vec2 size(GridWidth, GridHeight);
-            
+            glm::vec4 tileColor = glm::vec4(0.8f, 0.8f, 0.7f, 1.0);
+
             if (itemData[y][x] == 'W')
             {
                 glm::vec2 p = GridToPos(WALL, glm::vec2(x, y));
@@ -119,6 +118,7 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
                 glm::vec2 p = GridToPos(TARGET, glm::vec2(x, y));
                 glm::vec2 s = GridSize * 0.6f;
                 GameObject target(p, glm::vec2(x, y), s, ResourceManager::GetTexture("Target"), TARGET);
+                tileColor = glm::vec4(1.0f, 1.0f, 0.0f, 1.0);
                 Targets.push_back(target);
             }
             else if (itemData[y][x] == 'S') 
@@ -142,7 +142,7 @@ void GameLevel::init(std::vector<std::vector<char>> itemData)
                 Boxes.push_back(box);
             }
            
-            GameObject obj(pos, glm::vec2(x, y), size, ResourceManager::GetTexture("Tile"), TILE, glm::vec4(0.8f, 0.8f, 0.7f, 1.0));
+            GameObject obj(pos, glm::vec2(x, y), size, ResourceManager::GetTexture("Tile"), TILE, tileColor);
             Items.push_back(obj);
         }
     }

@@ -38,7 +38,7 @@ void Game::Init()
     GameLevel one, two;
 
     GLuint LWidth = Width * 0.6;
-    GLuint LHeight = Height * 0.6;
+    GLuint LHeight = LWidth;
     GLuint offsetX = (Width - LWidth) / 2;
     GLuint offsetY = (Height - LHeight) / 2;
     one.Load("./levels/level1.txt", LWidth, LHeight, offsetX, offsetY);
