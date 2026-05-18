@@ -1,3 +1,5 @@
+#include "dirent.h"
+
 #include "game.h"
 #include "GLFW/glfw3.h"
 #include "glm/detail/func_trigonometric.hpp"
@@ -6,7 +8,6 @@
 Game::Game(GLuint width, GLuint height) 
 	: State(GAME_PLAY), Keys(), Width(width), Height(height) 
 { 
-
 }
 
 Game::~Game()
@@ -35,16 +36,8 @@ void Game::Init()
     TextRenderer = new class TextRenderer(this->Width, this->Height);
     TextRenderer->Load("./res/fonts/AnonymousPro-Regular.ttf", 24);
     // Load levels
-    GameLevel one, two;
 
-    GLuint LWidth = Width * 0.6;
-    GLuint LHeight = LWidth;
-    GLuint offsetX = (Width - LWidth) / 2;
-    GLuint offsetY = (Height - LHeight) / 2;
-    one.Load("./levels/level1.txt", LWidth, LHeight, offsetX, offsetY);
-    two.Load("./levels/level2.txt", LWidth, LHeight, offsetX, offsetY);
-    Levels.push_back(one);
-    Levels.push_back(two);
+    loadLevels("./levels");
     CurLevel = 0;
 }
 
@@ -242,4 +235,47 @@ void Game::Undo()
         box.GPosition = cmd.BoxPrev;
         box.Position = level.GridToPos(BOX, cmd.BoxPrev);
     }
+}
+
+void Game::loadLevels(const char *path)
+{
+    DIR* dir = opendir(path);
+    if (!dir)
+    {
+        return;
+    }
+
+    struct dirent *entry;
+
+    std::vector<std::string> files;
+
+    while ((entry = readdir(dir)) != nullptr)
+    {
+        if (strcmp(entry->d_name, ".") == 0 ||
+            strcmp(entry->d_name, "..") == 0)
+            continue;
+
+        files.emplace_back(entry->d_name);
+    }
+
+    closedir(dir);
+
+    std::sort(files.begin(), files.end());
+
+    for (const auto &name : files)
+    {
+        GameLevel gl;
+
+        GLuint LWidth = Width * 0.6;
+        GLuint LHeight = LWidth;
+        GLuint offsetX = (Width - LWidth) / 2;
+        GLuint offsetY = (Height - LHeight) / 2;
+
+        std::string fullPath = std::string(path) + "/" + name;
+
+        gl.Load(fullPath.c_str(), LWidth, LHeight, offsetX, offsetY);
+
+        Levels.push_back(gl);
+    }
+
 }

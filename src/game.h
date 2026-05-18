@@ -36,6 +36,8 @@ public:
 private:
     SpriteRenderer *SpriteRenderer;
     TextRenderer *TextRenderer;
+
+    void loadLevels(const char *path);
 };
 
 #endif
